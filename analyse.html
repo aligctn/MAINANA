@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-proxima-nova@1.0.1/style.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/js/all.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/focus@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Proxima Nova Lt', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#005666',
+                        secondary: '#FF765B',
+                        info: '#88C1BA',
+                        disableBg: '#E5E7E7',
+                        customgray: '#FBFBFB',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Pocket Ally</title>
+</head>
+
+<body>
+    <section class="hidden flex-col gap-8 bg-customgray p-12  md:flex lg:flex-row lg:h-screen lg:px-16 lg:py-12"
+        x-data="{ openTab: 'decode' }">
+        <aside
+            class="flex flex-col justify-between gap-2 bg-white rounded-[32px] shadow-[0px_4px_8px_0px_#9A9D9E1F] w-full p-5  lg:w-[256px] lg:px-5 lg:py-8">
+            <div class="flex flex-row justify-between gap-16  lg:flex-col">
+                <img src="./secondary-logo.svg" alt="logo" width="158" height="50">
+                <div class="flex flex-row gap-8  lg:flex-col">
+                    <button @click="openTab = 'decode'"
+                        :class="openTab === 'decode' ? 'text-white bg-secondary' : 'text-primary bg-transparent'"
+                        class="inline-flex items-center gap-3 text-base rounded-[100px] px-4 py-3 duration-200 ease-in-out  lg:texl-lg lg:p-4">
+                        <i class="fa-solid fa-code"></i>
+                        Decode
+                    </button>
+                    <button @click="openTab = 'blog'"
+                        :class="openTab === 'blog' ? 'text-white bg-secondary' : 'text-primary bg-transparent'"
+                        class="inline-flex items-center gap-3 text-base rounded-[100px] px-4 py-3 duration-200 ease-in-out  lg:texl-lg lg:p-4">
+                        <i class="fa-solid fa-blog"></i>
+                        Blog
+                    </button>
+                    <button @click="openTab = 'profile'"
+                        :class="openTab === 'profile' ? 'text-white bg-secondary' : 'text-primary bg-transparent'"
+                        class="inline-flex items-center gap-3 text-base rounded-[100px] px-4 py-3 duration-200 ease-in-out  lg:texl-lg lg:p-4">
+                        <i class="fa-solid fa-user"></i>
+                        My Profile
+                    </button>
+                </div>
+            </div>
+            <div class="text-end  lg:text-start">
+                <!-- <button
+                    class="inline-flex items-center gap-3 text-base text-primary font-semibold rounded-[100px] px-4 py-3  lg:texl-lg lg:p-4">
+                    <i class="fa-solid fa-gear"></i>
+                    Setting
+                </button> -->
+                <div x-data="{ modalOpen: false }" @keydown.escape.window="modalOpen = false"
+                    :class="{ 'z-40': modalOpen }" class="relative w-auto h-auto">
+                    <button @click="modalOpen=true"
+                        class="inline-flex items-center gap-3 text-base text-primary font-semibold 
+                                   rounded-[100px] px-4 py-3 w-full hover:text-white hover:bg-secondary  lg:texl-lg lg:p-4">
+                        <i class="fa-solid fa-gear"></i>
+                        Setting
+                    </button>
+                    <template x-teleport="body">
+                        <div x-show="modalOpen"
+                            class="fixed top-0 left-0 z-[99] flex items-center justify-center w-screen h-screen"
+                            x-cloak>
+                            <div x-show="modalOpen" x-transition:enter="ease-out duration-100"
+                                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                                x-transition:leave="ease-in duration-300" x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0" @click="modalOpen=false"
+                                class="absolute inset-0 w-full h-full bg-gray-900 bg-opacity-50 backdrop-blur-sm">
+                            </div>
+                            <div x-show="modalOpen" x-trap.inert.noscroll="modalOpen"
+                                x-transition:enter="ease-out duration-100" x-transition:enter-start="opacity-0 scale-90"
+                                x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-200"
+                                x-transition:leave-start="opacity-100 scale-100"
+                                x-transition:leave-end="opacity-0 scale-90"
+                                class="relative w-full bg-white shadow-md bg-white drop-shadow-md backdrop-blur-sm  md:max-w-[700px]  lg:max-w-[975px] md:rounded-2xl">
+                                <div
+                                    class="relative flex items-center justify-between border-b-[1px] border-b-[#E5E7E7] px-14 py-8">
+                                    <h3 class="text-2xl text-[#006D81] font-semibold">Settings</h3>
+                                    <button @click="modalOpen=false"
+                                        class="absolute top-0 right-0 flex items-center justify-center w-6 h-6 mt-5 mr-5 text-gray-600 rounded-full hover:text-gray-800 hover:bg-gray-50">
+                                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="flex gap-16 px-11 py-8" x-data="{ openTab :  'subscribe' }">
+                                    <div class="flex flex-col gap-2 w-4/12">
+                                        <button @click="openTab = 'subscribe'"
+                                            :class="openTab === 'subscribe' ? 'text-white bg-info' : 'text-primary bg-transparent'"
+                                            class="inline-flex items-center gap-3 text-base rounded-[100px] w-full px-4 py-3 duration-200 ease-in-out  lg:texl-lg lg:p-4">
+                                            <img class="w-4 h-4" src="./Subscription.png" alt="">
+                                            Subscription
+                                        </button>
+                                        <button @click="openTab = 'restore'"
+                                            :class="openTab === 'restore' ? 'text-white bg-info' : 'text-primary bg-transparent'"
+                                            class="inline-flex items-center gap-3 text-base rounded-[100px] w-full px-4 py-3 duration-200 ease-in-out  lg:texl-lg lg:p-4">
+                                            <img class="w-4 h-4" src="./restore.png" alt="">
+                                            Restore Purchase
+                                        </button>
+                                        <button @click="openTab = 'follow'"
+                                            :class="openTab === 'follow' ? 'text-white bg-info' : 'text-primary bg-transparent'"
+                                            class="inline-flex items-center gap-3 text-base rounded-[100px] w-full px-4 py-3 duration-200 ease-in-out  lg:texl-lg lg:p-4">
+                                           <img class="w-4 h-4" src="./follow up questions.png" alt="">
+                                            Follow-up Questions
+                                        </button>
+                                        <button @click="openTab = 'Account'"
+                                            :class="openTab === 'Account' ? 'text-white bg-info' : 'text-primary bg-transparent'"
+                                            class="inline-flex items-center gap-3 text-base rounded-[100px] w-full px-4 py-3 duration-200 ease-in-out  lg:texl-lg lg:p-4">
+                                            <img class="w-4 h-4" src="./account.png" alt="">
+                                            My Account
+                                        </button>
+                                        <button @click="openTab = 'Choose'"
+                                        :class="openTab === 'Choose' ? 'text-white bg-info' : 'text-primary bg-transparent'"
+                                        class="inline-flex items-center gap-3 text-base rounded-[100px] w-full px-4 py-3 duration-200 ease-in-out  lg:texl-lg lg:p-4">
+                                        <img class="w-4 h-4" src="./language.png" alt="">
+                                        Choose Language
+                                    </button>
+                                    <button @click="openTab = 'Privacy'"
+                                    :class="openTab === 'Privacy' ? 'text-white bg-info' : 'text-primary bg-transparent'"
+                                    class="inline-flex items-center gap-3 text-base rounded-[100px] w-full px-4 py-3 duration-200 ease-in-out  lg:texl-lg lg:p-4">
+                                    <img class="w-4 h-4" src="./privacy.png" alt="">
+                                    Privacy Policy
+                                </button>
+                                <button @click="openTab = 'Terms'"
+                                :class="openTab === 'Terms' ? 'text-white bg-info' : 'text-primary bg-transparent'"
+                                class="inline-flex items-center gap-3 text-base rounded-[100px] w-full px-4 py-3 duration-200 ease-in-out  lg:texl-lg lg:p-4">
+                                <img class="w-4 h-4" src="./term of use.png" alt="">
+                                Terms of Use
+                            </button></div>
+                                    <div class="w-8/12">
+                                        <div x-show="openTab === 'subscribe'">
+                                            <div class="w-[555px] h-[430px] relative">
+                                                <div class="w-[554px] h-[71px] left-0 top-0 absolute">
+                                                  <div class="w-[554px] h-[71px] left-0 top-0 absolute bg-[#ecf8f5] rounded-2xl">
+                                                    <div class="left-[71px] top-[26px] absolute text-center text-[#005666] text-base font-bold font-['Proxima Nova'] leading-snug">Renewal Date </div>
+                                                  </div>
+                                                  
+                                                  <div class="left-[436px] top-[24px] absolute text-center text-[#005666] text-base font-bold font-['Inter'] leading-tight tracking-tight">23 Nov 2024 </div>
+                                                  <div class="w-10 h-10 left-[16px] top-[16px] absolute">
+                                                    <div class="w-10 h-10 left-0 top-0 absolute bg-[#006d81] rounded-full"><img src="./Group 1686552886.png" alt=""></div>
+                                                    
+                                                  </div>
+                                                </div>
+                                                <div class="h-[132px] left-0 top-[103px] absolute justify-start items-end gap-[22px] inline-flex">
+                                                  <div class="w-[122px] h-[132px] relative">
+                                                    <button class="w-[122px] h-[123px] pl-[15px] pr-[9px] py-[9px] left-0 top-[9px] absolute bg-white rounded-[10px] border border-[#b5b5b5] flex-col justify-center items-start gap-[5px] inline-flex hover:border-[#ff765b] hover:text-[#ff765b]">
+                                                      <div class="self-stretch text-#b5b5b5] text-xs font-bold font-['Proxima Nova'] leading-tight">3 Months</div>
+                                                      <div class="self-stretch h-[34px] text-#b5b5b5] text-2xl font-semibold font-['Proxima Nova'] leading-[30px]">$35.99</div>
+                                                      <div class="self-stretch text-#b5b5b5] text-[10px] font-bold font-['Proxima Nova'] leading-[14px]">$8.33/month<br/>Free 7 Day Trial</div>
+                                                    </button>
+                                                    <div class="w-5 h-5 px-[1.67px] py-[4.17px] left-[92px] top-[24.28px] absolute justify-center items-center inline-flex"></div>
+                                                    <div class="w-[75px] h-[19px] px-1 py-0.5 left-[24px] top-0 absolute bg-[#ff765b] rounded justify-start items-start gap-2.5 inline-flex">
+                                                      <div class="grow shrink basis-0 self-stretch text-center text-white text-[7px] font-bold font-['Arial']">BEST VALUE</div>
+                                                    </div>
+                                                  </div>
+                                                  <button class="w-[122px] h-[123px] pl-[15px] pr-[9px] py-[9px]  bg-white rounded-[10px] border border-[#b5b5b5] flex-col justify-center items-start gap-[5px] inline-flex hover:border-[#ff765b] hover:text-[#ff765b]">
+                                                    <div class="self-stretch text-#b5b5b5] text-xs font-bold font-['Proxima Nova'] leading-tight">7 Messages</div>
+                                                    <div class="self-stretch h-[34px] text-#b5b5b5] text-2xl font-semibold font-['Proxima Nova'] leading-[30px]">$12.99</div>
+                                                    <div class="self-stretch text-#b5b5b5] text-[10px] font-bold font-['Proxima Nova'] leading-[14px]">1 Time payment</div>
+                                                  </button>
+                                                  <button class="w-[122px] h-[123px] pl-[15px] pr-[9px] py-[9px]  bg-white rounded-[10px] border border-[#b5b5b5] flex-col justify-center items-start gap-[5px] inline-flex hover:border-[#ff765b] hover:text-[#ff765b]">
+                                                    <div class="self-stretch text-#b5b5b5] text-xs font-bold font-['Proxima Nova'] leading-tight">3 Messages</div>
+                                                    <div class="self-stretch h-[34px] text-#b5b5b5] text-2xl font-semibold font-['Proxima Nova'] leading-[30px]">$2.99</div>
+                                                    <div class="self-stretch text-#b5b5b5] text-[10px] font-bold font-['Proxima Nova'] leading-[14px]">1 Time payment</div>
+                                                  </button>
+                                                  <button class="w-[122px] h-[123px] pl-[15px] pr-[9px] py-[9px]  bg-white rounded-[10px] border border-[#b5b5b5] flex-col justify-center items-start gap-[5px] inline-flex hover:border-[#ff765b] hover:text-[#ff765b]">
+                                                    <div class="self-stretch text-#b5b5b5] text-xs font-bold font-['Proxima Nova'] leading-tight">1 year</div>
+                                                    <div class="self-stretch h-[34px] text-#b5b5b5] text-2xl font-semibold font-['Proxima Nova'] leading-[30px]">$45.99</div>
+                                                    <div class="self-stretch text-#b5b5b5] text-[10px] font-bold font-['Proxima Nova'] leading-[14px]">1 Time payment</div>
+                                                  </button> 
+                                                </div>
+                                                <p>Your subscription expires in November 23. Choose the renew option  available in order to be up to date.</p>
+                                           <label class="inline-flex items-center cursor-pointer mt-72">
+                                                <input type="checkbox" value="" class="sr-only peer">
+                                                <div class="relative w-11 h-6 bg-[#ff765b] peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#ff765b] dark:peer-focus:ring-[#ff765b] rounded-full peer dark:bg-[#ff765b] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-[#ff765b] after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-[#ff765b] peer-checked:bg-[#ff765b]"></div>
+                                                    <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Renew transaction
+                                                    </span>
+                                                          </label>
+                                                  
+                                                <div class="w-[183px] h-[52px] left-[372px] top-[378px] absolute">
+                                                    <button class="w-[183px] h-[52px] left-0 top-0 absolute bg-[#b5b5b5] rounded-[100px] shadow hover:bg-[#ff765b] hover:cursor-pointer">
+                                                        <div class="w-[125.91px] left-[28.81px] top-[14px] absolute text-center text-[#fdfdfd] text-base font-bold font-['Inter'] uppercase leading-tight tracking-wide">Done</div>
+                                                    </button>
+                                                  
+                                                </div>
+                                              </div>
+                                        </div>
+                                        <div x-show="openTab === 'restore'">
+                                            <div class="w-[554px] h-[430px] relative">
+                                                <div class="w-[554px] h-[71px] left-0 top-0 absolute">
+                                                  <div class="w-[554px] h-[71px] left-0 top-0 absolute bg-[#ecf8f5] rounded-2xl"></div>
+                                                  <div class="left-[69px] top-[26px] absolute text-center text-[#005666] text-base font-medium font-['Proxima Nova'] leading-snug">Billing cycle </div>
+                                                  <div class="left-[479px] top-[26px] absolute text-center text-[#005666] text-base font-medium font-['Proxima Nova'] leading-snug">Monthly</div>
+                                                  <div class="w-10 h-10 left-[14px] top-[16px] absolute">
+                                                    <div class="w-10 h-10 left-0 top-0 absolute bg-[#006d81] rounded-full"><img src="./Group 2.png" alt=""></div>
+                                                    <div class="w-6 h-6 left-[8px] top-[8px] absolute justify-center items-center inline-flex">
+                                                      <div class="w-6 h-6 relative">
+                                                        <div class="w-[6.50px] h-[7.72px] left-[2px] top-[14.28px] absolute">
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                                <div class="w-[292px] left-[14px] top-[95px] absolute text-[#005666] text-base font-normal font-['Proxima Nova'] leading-tight">Are you sure you want to cancel your<br/>Pocket Ally subscription?</div>
+                                                <div class="h-[52px] left-[176px] top-[378px] absolute justify-start items-center gap-3 inline-flex">
+                                                  <div class="w-[183px] h-[52px] relative">
+                                                    <button class="w-[183px] h-[52px] left-0 top-0 absolute rounded-[100px] shadow border border-[#b5b5b5] hover:bg-[#ff765b] hover:cursor-pointer hover:text-white">
+                                                        <div class="w-[94.97px] left-[44.28px] top-[15.17px] absolute text-center  text-base font-medium font-['Inter'] uppercase leading-tight tracking-wide">cancel</div>
+                                                    </button>
+
+                                                  </div>
+                                                  <div class="w-[183px] h-[52px] relative">
+                                                    <button class="w-[183px] h-[52px] left-0 top-0 absolute bg-[#b5b5b5] rounded-[100px] shadow hover:bg-[#ff765b] hover:cursor-pointer hover:text-white">
+                                                        <div class="w-[125.91px] left-[28.81px] top-[14px] absolute text-center  text-base font-medium font-['Inter'] uppercase leading-tight tracking-wide">No, keep it</div>
+                                                    </button>
+                                                    
+                                                  </div>
+                                                </div>
+                                              </div>
+                                        </div>
+                                        <div x-show="openTab === 'follow'">
+                                            <div class="w-[531px] h-[399px] relative">
+                                                <div class="w-[377px] left-0 top-[1px] absolute text-[#005666] text-2xl font-semibold font-['Proxima Nova'] leading-[30px]">Enable Follow-up Questions</div>
+                                                <label class="inline-flex items-center cursor-pointer ml-96">
+                                                    <input type="checkbox" value="" class="sr-only peer">
+                                                    <div class="relative w-11 h-6 bg-[#ff765b] peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#ff765b] dark:peer-focus:ring-[#ff765b] rounded-full peer dark:bg-[#ff765b] peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-[#ff765b] after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-[#ff765b] peer-checked:bg-[#ff765b]"></div>
+                                                        <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">Renew transaction
+                                                        </span>
+                                                              </label>
+                                                <div class="w-[378px] h-[52px] pl-[195px] left-[153px] top-[347px] absolute justify-end items-center inline-flex">
+                                                              <button class="bg-[#fff] btn-wide  text-gray-800 border-2 border-[#ff765b] px-12 py-2 rounded-full hover:bg-[#ff765b] hover:text-white focus:outline-none focus:bg-teal-600">DONE</button>
+                                                   
+                                                      </div>
+                                                      </div>
+                                                 
+                                           
+                                        </div>
+                                       
+                                        <div x-show="openTab === 'Account'">
+                                            <div class="w-[554px] h-[71px] relative ml-14">
+                                                <div class="w-[550px] h-[71px] top-0 absolute bg-[#ecf8f5] rounded-2xl"></div>
+                                                <div class="left-[69px] top-[26px] absolute text-[#005666] text-base font-medium font-['Proxima Nova'] leading-snug">Account Details</div>
+                                                <div class="w-10 h-10 left-[14px] top-[16px] absolute">
+                                                  <div class="w-10 h-10 left-0 top-0 absolute bg-[#006d81] rounded-full"><img src="./account icon.png" alt=""></div>
+                                                  <div class="w-6 h-6 pl-[4.60px] pr-[4.26px] pt-[1.25px] pb-[1.45px] left-[8px] top-[8px] absolute justify-center items-center inline-flex"></div>
+                                                </div>
+                                              </div>
+                                                <p class="text-[#3277df] text-sm text-base font-normal font-['Proxima Nova'] leading-tight ml-16">We value your privacy, and the information you submit here is only for our internal operational use. We will never share your information with any third party outside our network under any circumstances!</p>
+                                                <div class= " max-w-md mx-auto bg-white ">
+                                                    <!-- Name Input -->
+                                                    <div class="mb-4">
+                                                      <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Name</label>
+                                                      <input type="text" id="name" placeholder="Enter your name"
+                                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                                                    </div>
+                                                    
+                                                    <!-- Email Input -->
+                                                    <div class="mb-4">
+                                                      <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email</label>
+                                                      <input type="email" id="email" placeholder="Enter your email"
+                                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500">
+                                                    </div>
+                                                    <a class="text-[#ff765b] text-sm" href="">Forgot password?</a>
+                                                    <!-- Button Group -->
+                                                    <div class="flex justify-between">
+                                                      <!-- Submit Button -->
+                                                      <button class="bg-[#fff] btn-wide  text-gray-800 border-2 px-12 py-2 rounded-full hover:bg-[#ff765b] focus:outline-none focus:bg-teal-600">
+                                                        DELETE
+                                                      </button>
+                                                      
+                                                      <!-- Cancel Button -->
+                                                      <button class="bg-[#fff] btn-wide text-gray-800 px-12 py-2 border-2 rounded-full hover:bg-[#ff765b] focus:outline-none focus:bg-[#ff765b]">
+                                                        SAVE
+                                                      </button>
+                                                    </div>
+                                                  </div>
+                                                  
+                                                  
+  
+                                            
+                                                  
+                                                  
+                                                 
+                                        </div>
+                                        <div x-show="openTab === 'Choose'">
+                                            <div x-data="{
+                                                countries: {
+                                                    'USA': ['English', 'Spanish'],
+                                                    'Canada': ['English', 'French'],
+                                                    'India': ['Hindi', 'English'],
+                                                    'Germany': ['German'],
+                                
+                                                    'Australia': ['English'],
+                                                },
+                                                selectedCountry: null,
+                                                selectedLanguage: null,
+                                                languages: []
+                                            }"
+                                            class="max-w-md mx-auto p-6 bg-white">
+                                        
+                                          <!-- Choose Country Dropdown -->
+                                          <div class="mb-4">
+                                            <label for="country" class="block text-gray-700 text-sm font-bold mb-2">Choose Country</label>
+                                            <select id="country" x-model="selectedCountry" @change="languages = countries[selectedCountry]"
+                                              class="w-full px-4 py-2 border border-[#ff765b] rounded-lg focus:outline-none focus:border-[#ff765b] focus:ring-1 focus:ring-[#ff765b]">
+                                              <option value="" disabled selected>Select your country</option>
+                                              <template x-for="(languages, country) in countries" :key="country">
+                                                <option x-text="country" :value="country"></option>
+                                              </template>
+                                            </select>
+                                          </div>
+                                        
+                                          <!-- Choose Language Dropdown -->
+                                          <div class="mb-4" x-show="languages.length > 0">
+                                            <label for="language" class="block text-gray-700 text-sm font-bold mb-2">Choose Language</label>
+                                            <select id="language" x-model="selectedLanguage"
+                                              class="w-full px-4 py-2 border border-[#ff765b] rounded-lg focus:outline-none focus:border-[#ff765b] focus:ring-1 focus:ring-[#ff765b]">
+                                              <option value="" disabled selected>Select your language</option>
+                                              <template x-for="language in languages" :key="language">
+                                                <option x-text="language"></option>
+                                              </template>
+                                            </select>
+                                          </div>
+                                        
+                                          <!-- Submit Button -->
+                                          <button @click="alert(`Selected Country: ${selectedCountry}, Selected Language: ${selectedLanguage}`)"
+                                            class="w-full bg-[#fff] text-black py-2 border-2 rounded-lg hover:bg-[#ff765b] hover:text-white focus:outline-none focus:bg-[#ff765b]">
+                                            Submit
+                                          </button>
+                                        
+                                        </div>
+                                        </div>
+                                        <div x-show="openTab === 'Privacy'">
+                                            <h1 class="text-[#007f80] text-3xl bold text-base font-normal font-['Proxima Nova'] leading-tight">Privacy Policy</h1>
+                                           <p class="text-[#007f80] text-sm text-base font-normal font-['Proxima Nova'] leading-tight">Pocket Ally is an AI-powered chat application designed to enhance your interactions. With advanced natural language processing, it tailors responses to your preferences. Navigate effortlessly through its user-friendly interface, typing your questions and receiving insightful answers. Pocket Ally constantly updates its knowledge base, ensuring you're always engaged in the latest information and trends. Enjoy practical features like translation, calendar management, and more. Your privacy is safeguarded with strict data protection protocols. Join the  Pocket Ally community today and unlock the power of conversational AI.
+
+                                            Your privacy is safeguarded with strict data protection protocols. Join the  Pocket Ally community today and unlock the power of conversational AI.
+                                            
+                                            Your privacy is safeguarded with strict data protection protocols. Join the  Pocket Ally community today and unlock the power of conversational AI.
+                                            
+                                            Ally constantly updates its knowledge base, ensuring you're always engaged in the latest information and trends. Enjoy practical features like translation, calendar management, and more. Your privacy is safeguarded with strict data protection protocols. Join the  Pocket Ally community today and unlock the power of conversational AI. Ally constantly updates its knowledge base, ensuring you're always engaged in the latest information and trends. Enjoy practical features like translation, calendar management, and more. Your privacy is safeguarded with strict data protection protocols. Join the  Pocket Ally community today and unlock the power of conversational AI.</p>
+                            
+                                        </div>
+                                            <div x-show="openTab === 'Terms'">
+                                                <h1 class="text-[#007f80] text-3xl bold text-base font-normal font-['Proxima Nova'] leading-tight">Terms of Use</h1>
+                                           <p class="text-[#007f80] text-sm text-base font-normal font-['Proxima Nova'] leading-tight">Pocket Ally is an AI-powered chat application designed to enhance your interactions. With advanced natural language processing, it tailors responses to your preferences. Navigate effortlessly through its user-friendly interface, typing your questions and receiving insightful answers. Pocket Ally constantly updates its knowledge base, ensuring you're always engaged in the latest information and trends. Enjoy practical features like translation, calendar management, and more. Your privacy is safeguarded with strict data protection protocols. Join the  Pocket Ally community today and unlock the power of conversational AI.
+
+                                            Your privacy is safeguarded with strict data protection protocols. Join the  Pocket Ally community today and unlock the power of conversational AI.
+                                            
+                                            Your privacy is safeguarded with strict data protection protocols. Join the  Pocket Ally community today and unlock the power of conversational AI.
+                                            
+                                            Ally constantly updates its knowledge base, ensuring you're always engaged in the latest information and trends. Enjoy practical features like translation, calendar management, and more. Your privacy is safeguarded with strict data protection protocols. Join the  Pocket Ally community today and unlock the power of conversational AI. Ally constantly updates its knowledge base, ensuring you're always engaged in the latest information and trends. Enjoy practical features like translation, calendar management, and more. Your privacy is safeguarded with strict data protection protocols. Join the  Pocket Ally community today and unlock the power of conversational AI.</p>
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </aside>
+        <div class="flex flex-col gap-9 w-full  lg:w-8/12 h-auto top-52">
+            <div class="flex flex-col">
+                <div class="flex gap-5">
+                    <div class="text-2xl text-primary font-semibold">Got a Gut Feelings?</div>
+                    <div class="inline-flex items-center gap-2 text-white bg-info rounded-lg h-auto px-2 py-1">
+                        <i class="fa-regular fa-lightbulb"></i>
+                        3
+                    </div>
+                </div>
+                <div class="texl-lg text-primary font-medium">Test It Out 🧐</div>
+            </div>
+            <div class="bg-white rounded-[32px] shadow-[0px_4px_8px_0px_#9A9D9E1F] w-full h-full p-10">
+                <div x-show="openTab === 'decode'" x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="opacity-0 transform scale-90"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    class="flex flex-col justify-between h-[70vh]  lg:h-full">
+                    <div class="flex justify-end">
+                        <div x-data="{ modalOpen: false }" @keydown.escape.window="modalOpen = false"
+                            :class="{ 'z-40': modalOpen }" class="relative w-auto h-auto">
+                            <div @click="modalOpen=true"
+                                class="flex gap-4 bg-secondary text-white rounded-2xl w-[343px] p-4">
+                                <div class="bg-[#FFFFFF3D] rounded-full w-fit h-fit p-3">
+                                    <i class="fa-solid fa-crown text-2xl"></i>
+                                </div>
+                                <div class="text-start">
+                                    <h3 class="texl-lg font-semibold">Upgrade Membership</h3>
+                                    <p class="text-sm font-medium">Enjoy all the benefits and explore more possibilities
+                                    </p>
+                                </div>
+                                <i class="fa-regular fa-circle-xmark"></i>
+                            </div>
+                            <template x-teleport="body">
+                                <div x-show="modalOpen"
+                                    class="fixed top-0 left-0 z-[99] flex items-center justify-center w-screen h-screen"
+                                    x-cloak>
+                                    <div x-show="modalOpen" x-transition:enter="ease-out duration-100"
+                                        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                                        x-transition:leave="ease-in duration-300" x-transition:leave-start="opacity-100"
+                                        x-transition:leave-end="opacity-0" @click="modalOpen=false"
+                                        class="absolute inset-0 w-full h-full bg-gray-900 bg-opacity-50 backdrop-blur-sm">
+                                    </div>
+                                    <div x-show="modalOpen" x-trap.inert.noscroll="modalOpen"
+                                        x-transition:enter="ease-out duration-100"
+                                        x-transition:enter-start="opacity-0 scale-90"
+                                        x-transition:enter-end="opacity-100 scale-100"
+                                        x-transition:leave="ease-in duration-200"
+                                        x-transition:leave-start="opacity-100 scale-100"
+                                        x-transition:leave-end="opacity-0 scale-90"
+                                        class="relative w-full bg-white shadow-md bg-white drop-shadow-md backdrop-blur-sm  md:max-w-[700px]  lg:max-w-[914px] md:rounded-2xl">
+                                        <div class="grid grid-cols-1 md:grid-cols-2">
+                                            <div
+                                                class="relative flex items-center justify-between px-10 py-16   md:px-14 md:py-20">
+                                                <h3 class="text-lg font-semibold">Modal Title</h3>
+                                                <button @click="modalOpen=false"
+                                                    class="absolute top-0 right-0 flex items-center justify-center w-6 h-6 mt-5 mr-5 text-gray-600 rounded-full hover:text-gray-800 hover:bg-gray-50">
+                                                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div
+                                                class="bg-gray-50 rounded-tr-2xl rounded-br-2xl px-10 py-20  md:px-12 md:py-24">
+                                                Hello
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-end gap-2">
+                        <div class="flex flex-col gap-1 w-full">
+                            <textarea
+                                class="textarea textarea-bordered bg-white border-[1px] border-info rounded-xl w-full h-[110px] p-5 focus:border-info  focus:outline-none"
+                                placeholder="your message here"></textarea>
+                            <div class="text-sm text-[#B5B6B6] font-medium">0/255</div>
+                        </div>
+                        <button
+                            class="text-base text-[#B5B6B6] font-semibold bg-[#E5E7E7] rounded-[100px] capitalize w-fit px-7 py-3">
+                            LET ME kNOW</button>
+                    </div>
+                </div>
+                <div x-show="openTab === 'blog'" x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="opacity-0 transform scale-90"
+                    x-transition:enter-end="opacity-100 transform scale-100" class="flex flex-col gap-3 h-96 ">
+                    <h3 class="text-2xl text-primary font-semibold">Recommanded</h3>
+                    <div class="overflow-x-auto">
+                        <div class="flex gap-3 w-fit h-[250px] overflow-x-auto">
+                            <div class="relative flex flex-col gap-3 w-[290px]">
+                                <div
+                                    class="absolute top-3 left-3 text-xs text-white bg-secondary rounded-[100px] px-2 py-1">
+                                    New Post</div>
+                                <img class="w-[290px] h-[176px]" src="/images/blog.png" alt="blog">
+                                <div class="pr-8">
+                                    <h4 class="texl-lg text-secondary font-semibold">Unmasking Manipulation</h4>
+                                    <p class="text-sm text-[#006D81]">How to Recognise and Respond to Toxic Messages
+                                    </p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                    <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                                </div>
+                            </div>
+                            <div class="relative flex flex-col gap-3 w-[290px]">
+                                <div
+                                    class="absolute top-3 left-3 text-xs text-white bg-secondary rounded-[100px] px-2 py-1">
+                                    New Post</div>
+                                <img class="w-[290px] h-[176px]" src="/images/blog.png" alt="blog">
+                                <div class="pr-8">
+                                    <h4 class="texl-lg text-secondary font-semibold">Unmasking Manipulation</h4>
+                                    <p class="text-sm text-[#006D81]">How to Recognise and Respond to Toxic Messages
+                                    </p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                    <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                                </div>
+                            </div>
+                            <div class="relative flex flex-col gap-3 w-[290px]">
+                                <div
+                                    class="absolute top-3 left-3 text-xs text-white bg-secondary rounded-[100px] px-2 py-1">
+                                    New Post</div>
+                                <img class="w-[290px] h-[176px]" src="/images/blog.png" alt="blog">
+                                <div class="pr-8">
+                                    <h4 class="texl-lg text-secondary font-semibold">Unmasking Manipulation</h4>
+                                    <p class="text-sm text-[#006D81]">How to Recognise and Respond to Toxic Messages
+                                    </p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                    <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                                </div>
+                            </div>
+                            <div class="relative flex flex-col gap-3 w-[290px]">
+                                <div
+                                    class="absolute top-3 left-3 text-xs text-white bg-secondary rounded-[100px] px-2 py-1">
+                                    New Post</div>
+                                <img class="w-[290px] h-[176px]" src="/images/blog.png" alt="blog">
+                                <div class="pr-8">
+                                    <h4 class="texl-lg text-secondary font-semibold">Unmasking Manipulation</h4>
+                                    <p class="text-sm text-[#006D81]">How to Recognise and Respond to Toxic Messages
+                                    </p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                    <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <section class="flex flex-col gap-6" x-data="{ tab :  'couples' }">
+                        <div class="flex flex-wrap gap-2 mt-8">
+                            <button @click="tab = 'alltopic'"
+                                :class="tab === 'alltopic' ? 'text-white bg-secondary border-secondary' : 'text-[#828282] bg-transparent border-[#B5B6B6]'"
+                                class="text-sm border-[1px] rounded-[100px] w-fit px-3 py-2">
+                                All Topics
+                            </button>
+                            <button @click="tab = 'couples'"
+                                :class="tab === 'couples' ? 'text-white bg-secondary border-secondary' : 'text-[#828282] bg-transparent border-[#B5B6B6]'"
+                                class="text-sm border-[1px] rounded-[100px] w-fit px-3 py-2">
+                                Couples
+                            </button>
+                            <button @click="tab = 'toxic'"
+                                :class="tab === 'toxic' ? 'text-white bg-secondary border-secondary' : 'text-[#828282] bg-transparent border-[#B5B6B6]'"
+                                class="text-sm text-[#828282] border-[1px] border-[#B5B6B6] rounded-[100px] w-fit px-3 py-2">
+                                Toxic Behaviour
+                            </button>
+                            <button @click="tab = 'Family'"
+                            :class="tab === 'Family' ? 'text-white bg-secondary border-secondary' : 'text-[#828282] bg-transparent border-[#B5B6B6]'"
+                            class="text-sm text-[#828282] border-[1px] border-[#B5B6B6] rounded-[100px] w-fit px-3 py-2">
+                            Family Talks
+                        </button>
+                        <button @click="tab = '  Manipulation'"
+                        :class="tab === '  Manipulation' ? 'text-white bg-secondary border-secondary' : 'text-[#828282] bg-transparent border-[#B5B6B6]'"
+                        class="text-sm text-[#828282] border-[1px] border-[#B5B6B6] rounded-[100px] w-fit px-3 py-2">
+                        Manipulation
+                    </button>
+                        </div>
+
+                        <div x-show="tab === 'alltopic'"class="flex flex-col gap-[60px]  md:flex-row">
+                            <div class="flex gap-3">all</div>
+                        </div>
+                        <div x-show="tab === 'couples'"class="flex flex-col gap-[60px]  md:flex-row">
+                            <div class="flex gap-3">
+                                <img src="/images/pic.png" alt="pic">
+                                <div class="flex flex-col justify-between">
+                                    <div class="flex justify-between">
+                                        <div
+                                            class="text-xs text-primary border-[1px] border-primary rounded-[100px] w-fit h-fit px-2 py-1">
+                                            Couples
+                                        </div>
+                                        <div class="flex gap-3">
+                                            <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                            <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm text-primary font-semibold">The Art of Reclaiming Your Voice
+                                        </h4>
+                                        <p class="text-xs text-[#B5B6B6]">Overcoming Gaslighting in Relationships</p>
+                                    </div>
+                                </div>
+                                <div x-show="tab ==='toxic'"class="flex flex-col gap-[60px]  md:flex-row">
+                                    <div class="flex gap-3">all</div>
+                            </div>
+                            <div class="flex gap-3">
+                                <img src="/images/pic.png" alt="pic">
+                                <div class="flex flex-col justify-between">
+                                    <div class="flex justify-between">
+                                        <div
+                                            class="text-xs text-primary border-[1px] border-primary rounded-[100px] w-fit h-fit px-2 py-1">
+                                            Couples
+                                        </div>
+                                        <div class="flex gap-3">
+                                            <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                            <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm text-primary font-semibold">The Art of Reclaiming Your Voice
+                                        </h4>
+                                        <p class="text-xs text-[#B5B6B6]">Overcoming Gaslighting in Relationships</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div x-show="openTab === 'profile'" x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="opacity-0 transform scale-90"
+                    x-transition:enter-end="opacity-100 transform scale-100" class="flex flex-col gap-3 h-96">
+                    <div class="flex justify-between">
+                        <h3 class="text-2xl text-primary font-semibold">Liked Articles</h3>
+                        <button class="text-base text-secondary font-semibold">VIEW ALL</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <div class="flex gap-3 w-fit pb-8">
+                            <div class="relative flex flex-col gap-3 w-[290px]">
+                                <div
+                                    class="absolute top-3 left-3 text-xs text-white bg-[#FFFFFF66] rounded-[100px] px-2 py-1">
+                                    Relationships</div>
+                                <img class="w-[290px] h-[176px]" src="/images/blog.png" alt="blog">
+                                <div class="pr-8">
+                                    <h4 class="texl-lg text-secondary font-semibold">Unmasking Manipulation</h4>
+                                    <p class="text-sm text-[#006D81]">How to Recognise and Respond to Toxic Messages
+                                    </p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                    <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                                </div>
+                            </div>
+                            <div class="relative flex flex-col gap-3 w-[290px]">
+                                <div
+                                    class="absolute top-3 left-3 text-xs text-white bg-[#FFFFFF66] rounded-[100px] px-2 py-1">
+                                    Relationships</div>
+                                <img class="w-[290px] h-[176px]" src="/images/blog.png" alt="blog">
+                                <div class="pr-8">
+                                    <h4 class="texl-lg text-secondary font-semibold">Unmasking Manipulation</h4>
+                                    <p class="text-sm text-[#006D81]">How to Recognise and Respond to Toxic Messages
+                                    </p>
+                                </div>
+                                <div class="flex gap-3">
+                                    <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                    <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8">
+                        <h3 class="texl-lg text-[#005666] font-semibold">Message History</h3>
+                        <div class="flex gap-12 lg:gap-20">
+                            <div class="flex flex-col gap-1 rounded-2xl shadow-[0px_4px_8px_0px_#9A9D9E1F] p-3">
+                                <div class="flex justify-between">
+                                    <h4 class="text-base text-[#006D81]">I don't understand why you can't just trust me.
+                                        After everything I've done</h4>
+                                    <i class="fa-solid fa-ellipsis-vertical text-[#88C1BA]"></i>
+                                </div>
+                                <div class="text-xs text-[#BABBC0]">19.04.2024 6PM</div>
+                            </div>
+                            <div class="flex flex-col gap-1 rounded-2xl shadow-[0px_4px_8px_0px_#9A9D9E1F] p-3">
+                                <div class="flex justify-between">
+                                    <h4 class="text-base text-[#006D81]">I don't understand why you can't just trust me.
+                                        After everything I've done</h4>
+                                    <i class="fa-solid fa-ellipsis-vertical text-[#88C1BA]"></i>
+                                </div>
+                                <div class="text-xs text-[#BABBC0]">19.04.2024 6PM</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+
+    <!-- Mobile view -->
+    <section class="flex flex-col justify-between h-screen  md:hidden" x-data="{ tab: 'profile' }">
+        <div class="flex flex-col gap-4 px-4 py-3 h-[90vh] overflow-y-auto">
+            <div class="flex justify-between">
+                <div></div>
+                <img class="w-[115px] h-[28]" src="/images/mobilelogo.svg" alt="mobile logo">
+                <!-- <i class="fa-solid fa-gear text-[#005666] w-5 h-5"></i> -->
+
+
+
+                <div x-data="{ modalOpen: false }" @keydown.escape.window="modalOpen = false"
+                    :class="{ 'z-40': modalOpen }" class="relative w-auto h-auto">
+                    <div @click="modalOpen=true">
+                        <i class="fa-solid fa-gear text-[#005666] w-5 h-5"></i>
+                    </div>
+                    <template x-teleport="body">
+                        <div x-show="modalOpen"
+                            class="fixed top-0 left-0 z-[99] flex items-end justify-center w-screen h-screen" x-cloak>
+                            <div x-show="modalOpen" x-transition:enter="ease-out duration-100"
+                                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                                x-transition:leave="ease-in duration-300" x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0" @click="modalOpen=false"
+                                class="absolute inset-0 w-full h-full bg-gray-900 bg-opacity-50 backdrop-blur-sm">
+                            </div>
+                            <div x-show="modalOpen" x-trap.inert.noscroll="modalOpen"
+                                x-transition:enter="ease-out duration-100" x-transition:enter-start="opacity-0 scale-90"
+                                x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-200"
+                                x-transition:leave-start="opacity-100 scale-100"
+                                x-transition:leave-end="opacity-0 scale-90"
+                                class="relative w-full bg-white shadow-md bg-white drop-shadow-md backdrop-blur-sm  md:max-w-[700px]  lg:max-w-[975px] md:rounded-2xl">
+                                <div class="relative flex items-center justify-between p-4 pb-0">
+                                    <h3 class="text-2xl text-[#006D81] font-semibold">Settings</h3>
+                                    <button @click="modalOpen=false"
+                                        class="absolute top-0 right-0 flex items-center justify-center w-6 h-6 mt-5 mr-5 text-gray-600 rounded-full hover:text-gray-800 hover:bg-gray-50">
+                                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="flex gap-16 p-4" x-data="{ openTab :  'subscribe' }">
+                                    <div class="flex flex-col gap-4 w-full">
+                                        <div class="bg-[#ECF8F5] rounded-[20px]">
+                                            <button @click="openTab = 'subscribe'"
+                                                class="inline-flex items-center gap-3 text-base text-primary font-medium border-b-[1px] border-b-[#C9E2DC] w-full px-4 py-5 duration-300 ease-in-out">
+                                                <div
+                                                    class="flex justify-center items-center bg-primary rounded-full w-10 h-10">
+                                                    
+                                                </div>
+                                                Suscription
+                                            </button>
+                                            <!-- :class="openTab === 'restore' ? 'text-white bg-info' : 'text-primary bg-transparent'" -->
+                                            <button @click="openTab = 'restore'"
+                                                class="inline-flex items-center gap-3 text-base text-primary font-medium w-full px-4 py-5 duration-300 ease-in-out">
+                                                <div
+                                                    class="flex justify-center items-center bg-primary rounded-full w-10 h-10">
+                                                    <i class="fa-regular fa-window-restore text-white w-5 h-5"></i>
+                                                </div>
+                                                Restore Purchase
+                                            </button>
+                                            <button @click="openTab = 'restore'"
+                                                class="inline-flex items-center gap-3 text-base text-primary font-medium w-full px-4 py-5 duration-300 ease-in-out">
+                                                <div
+                                                    class="flex justify-center items-center bg-primary rounded-full w-10 h-10">
+                                                    <i class="fa-regular fa-window-restore text-white w-5 h-5"></i>
+                                                </div>
+                                                Restore Purchase
+                                            </button>
+                                            <button @click="openTab = 'restore'"
+                                                class="inline-flex items-center gap-3 text-base text-primary font-medium w-full px-4 py-5 duration-300 ease-in-out">
+                                                <div
+                                                    class="flex justify-center items-center bg-primary rounded-full w-10 h-10">
+                                                    <i class="fa-regular fa-window-restore text-white w-5 h-5"></i>
+                                                </div>
+                                                Restore Purchase
+                                            </button>
+                                            <button @click="openTab = 'restore'"
+                                                class="inline-flex items-center gap-3 text-base text-primary font-medium w-full px-4 py-5 duration-300 ease-in-out">
+                                                <div
+                                                    class="flex justify-center items-center bg-primary rounded-full w-10 h-10">
+                                                    <i class="fa-regular fa-window-restore text-white w-5 h-5"></i>
+                                                </div>
+                                                Restore Purchase
+                                            </button>
+                                            <button @click="openTab = 'restore'"
+                                                class="inline-flex items-center gap-3 text-base text-primary font-medium w-full px-4 py-5 duration-300 ease-in-out">
+                                                <div
+                                                    class="flex justify-center items-center bg-primary rounded-full w-10 h-10">
+                                                    <i class="fa-regular fa-window-restore text-white w-5 h-5"></i>
+                                                </div>
+                                                Restore Purchase
+                                            </button>
+                                             <button @click="openTab = 'restore'"
+                                                class="inline-flex items-center gap-3 text-base rounded-[100px] w-full px-4 py-3 duration-200 ease-in-out  lg:texl-lg lg:p-4">
+                                                <i class="fa-regular fa-window-restore"></i>
+                                                Restore
+                                            </button>
+                                            <div class="w-auto">
+                                                <div x-show="openTab === 'subscribe'">
+                                                    move
+
+                                                    </div>
+                                                </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <div class="flex justify-end">
+                <div x-data="{ modalOpen: false }" @keydown.escape.window="modalOpen = false"
+                    :class="{ 'z-40': modalOpen }" class="relative w-auto h-auto">
+                    <div @click="modalOpen=true" class="flex gap-4 bg-secondary text-white rounded-2xl w-[343px] p-4">
+                        <div class="bg-[#FFFFFF3D] rounded-full w-fit h-fit p-3">
+                            <i class="fa-solid fa-crown text-2xl"></i>
+                        </div>
+                        <div class="text-start">
+                            <h3 class="texl-lg font-semibold">Upgrade Membership</h3>
+                            <p class="text-sm font-medium">Enjoy all the benefits and explore more possibilities
+                            </p>
+                        </div>
+                        <i class="fa-regular fa-circle-xmark"></i>
+                    </div>
+                    <template x-teleport="body">
+                        <div x-show="modalOpen"
+                            class="fixed top-0 left-0 z-[99] flex items-end justify-center w-screen h-screen" x-cloak>
+                            <div x-show="modalOpen" x-transition:enter="ease-out duration-100"
+                                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                                x-transition:leave="ease-in duration-300" x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0" @click="modalOpen=false"
+                                class="absolute inset-0 w-full h-full bg-gray-900 bg-opacity-50 backdrop-blur-sm">
+                            </div>
+                            <div x-show="modalOpen" x-trap.inert.noscroll="modalOpen"
+                                x-transition:enter="ease-out duration-100" x-transition:enter-start="opacity-0 scale-90"
+                                x-transition:enter-end="opacity-100 scale-100" x-transition:leave="ease-in duration-200"
+                                x-transition:leave-start="opacity-100 scale-100"
+                                x-transition:leave-end="opacity-0 scale-90"
+                                class="relative w-full bg-white shadow-md bg-white drop-shadow-md backdrop-blur-sm  md:max-w-[700px]  lg:max-w-[914px] md:rounded-2xl">
+                                <div class="grid grid-cols-1 md:grid-cols-2">
+                                    <div
+                                        class="relative flex items-center justify-between px-10 py-16   md:px-14 md:py-20">
+                                        <h3 class="text-lg font-semibold">Modal Title</h3>
+                                        <button @click="modalOpen=false"
+                                            class="absolute top-0 right-0 flex items-center justify-center w-6 h-6 mt-5 mr-5 text-gray-600 rounded-full hover:text-gray-800 hover:bg-gray-50">
+                                            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div
+                                        class="bg-gray-50 rounded-tr-2xl rounded-br-2xl px-10 py-20  md:px-12 md:py-24">
+                                        Hello
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+            <div class="flex flex-col">
+                <div class="flex gap-5">
+                    <div class="text-2xl text-primary font-semibold">Got a Gut Feelings?</div>
+                    <div class="inline-flex items-center gap-2 text-white bg-info rounded-lg h-auto px-2 py-1">
+                        <i class="fa-regular fa-lightbulb"></i>
+                        3
+                    </div>
+                </div>
+                <div class="texl-lg text-primary font-medium">Test It Out 🧐</div>
+            </div>
+            <div x-show="tab === 'decode'" x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="opacity-0 transform scale-90"
+                x-transition:enter-end="opacity-100 transform scale-100">
+                <div class="flex flex-col items-end gap-2">
+                    <div class="flex flex-col gap-1 w-full">
+                        <textarea id="w3review" name="w3review" rows="4" placeholder="Your message here"
+                            class="border-[1px] border-info rounded-xl w-full h-[110px] p-4">
+                        </textarea>
+                        <div class="text-sm text-[#B5B6B6] font-medium">0/255</div>
+                    </div>
+                    <button
+                        class="text-base text-[#B5B6B6] font-semibold bg-[#E5E7E7] rounded-[100px] capitalize w-fit px-7 py-3">
+                        LET ME kNOW</button>
+                </div>
+            </div>
+            <div x-show="tab === 'blog'" x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="opacity-0 transform scale-90"
+                x-transition:enter-end="opacity-100 transform scale-100" class="flex flex-col gap-3">
+                <h3 class="text-2xl text-primary font-semibold">Recommanded</h3>
+                <div class="overflow-x-auto">
+                    <div class="flex gap-3 w-fit pb-8">
+                        <div class="relative flex flex-col gap-3 w-[290px]">
+                            <div
+                                class="absolute top-3 left-3 text-xs text-white bg-secondary rounded-[100px] px-2 py-1">
+                                New Post</div>
+                            <img class="w-[290px] h-[176px]" src="/images/blog.png" alt="blog">
+                            <div class="pr-8">
+                                <h4 class="texl-lg text-secondary font-semibold">Unmasking Manipulation</h4>
+                                <p class="text-sm text-[#006D81]">How to Recognise and Respond to Toxic Messages
+                                </p>
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                            </div>
+                        </div>
+                        <div class="relative flex flex-col gap-3 w-[290px]">
+                            <div
+                                class="absolute top-3 left-3 text-xs text-white bg-secondary rounded-[100px] px-2 py-1">
+                                New Post</div>
+                            <img class="w-[290px] h-[176px]" src="/images/blog.png" alt="blog">
+                            <div class="pr-8">
+                                <h4 class="texl-lg text-secondary font-semibold">Unmasking Manipulation</h4>
+                                <p class="text-sm text-[#006D81]">How to Recognise and Respond to Toxic Messages
+                                </p>
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                            </div>
+                        </div>
+                        <div class="relative flex flex-col gap-3 w-[290px]">
+                            <div
+                                class="absolute top-3 left-3 text-xs text-white bg-secondary rounded-[100px] px-2 py-1">
+                                New Post</div>
+                            <img class="w-[290px] h-[176px]" src="/images/blog.png" alt="blog">
+                            <div class="pr-8">
+                                <h4 class="texl-lg text-secondary font-semibold">Unmasking Manipulation</h4>
+                                <p class="text-sm text-[#006D81]">How to Recognise and Respond to Toxic Messages
+                                </p>
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                            </div>
+                        </div>
+                        <div class="relative flex flex-col gap-3 w-[290px]">
+                            <div
+                                class="absolute top-3 left-3 text-xs text-white bg-secondary rounded-[100px] px-2 py-1">
+                                New Post</div>
+                            <img class="w-[290px] h-[176px]" src="/images/blog.png" alt="blog">
+                            <div class="pr-8">
+                                <h4 class="texl-lg text-secondary font-semibold">Unmasking Manipulation</h4>
+                                <p class="text-sm text-[#006D81]">How to Recognise and Respond to Toxic Messages
+                                </p>
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <section class="flex flex-col gap-6" x-data="{ tab :  'couples' }">
+                    <div class="w-full overflow-x-auto">
+                        <div class="flex gap-2 mt-8">
+                            <button @click="tab = 'alltopic'"
+                                :class="tab === 'alltopic' ? 'text-white bg-secondary border-secondary' : 'text-[#828282] bg-transparent border-[#B5B6B6]'"
+                                class="text-sm border-[1px] rounded-[100px] w-fit px-3 py-2">
+                                All Topics
+                            </button>
+                            <button @click="tab = 'couples'"
+                                :class="tab === 'couples' ? 'text-white bg-secondary border-secondary' : 'text-[#828282] bg-transparent border-[#B5B6B6]'"
+                                class="text-sm border-[1px] rounded-[100px] w-fit px-3 py-2">
+                                Couples
+                            </button>
+                            <button @click="tab = 'toxic'"
+                                :class="tab === 'toxic' ? 'text-white bg-secondary border-secondary' : 'text-[#828282] bg-transparent border-[#B5B6B6]'"
+                                class="text-sm text-[#828282] border-[1px] border-[#B5B6B6] rounded-[100px] w-fit px-3 py-2">
+                                Toxic Behaviour
+                            </button>
+                        </div>
+                    </div>
+                    <div x-show="tab === 'couples'" class="flex flex-col gap-8  md:flex-row md:gap-[60px]">
+                        <div class="flex gap-3">
+                            <img src="/images/pic.png" alt="pic">
+                            <div class="flex flex-col justify-between">
+                                <div class="flex justify-between">
+                                    <div
+                                        class="text-xs text-primary border-[1px] border-primary rounded-[100px] w-fit h-fit px-2 py-1">
+                                        Couples
+                                    </div>
+                                    <div class="flex gap-3">
+                                        <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                        <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm text-primary font-semibold">The Art of Reclaiming Your Voice</h4>
+                                    <p class="text-xs text-[#B5B6B6]">Overcoming Gaslighting in Relationships</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <img src="/images/pic.png" alt="pic">
+                            <div class="flex flex-col justify-between">
+                                <div class="flex justify-between">
+                                    <div
+                                        class="text-xs text-primary border-[1px] border-primary rounded-[100px] w-fit h-fit px-2 py-1">
+                                        Couples
+                                    </div>
+                                    <div class="flex gap-3">
+                                        <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                        <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm text-primary font-semibold">The Art of Reclaiming Your Voice</h4>
+                                    <p class="text-xs text-[#B5B6B6]">Overcoming Gaslighting in Relationships</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            <div x-show="tab === 'profile'" x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="opacity-0 transform scale-90"
+                x-transition:enter-end="opacity-100 transform scale-100" class="flex flex-col gap-3">
+                <div class="flex justify-between">
+                    <h3 class="text-lg text-primary font-semibold">Liked Articles</h3>
+                    <button class="text-sm text-secondary font-semibold">VIEW ALL</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <div class="flex gap-3 w-fit pb-8">
+                        <div class="relative flex flex-col gap-3 w-[290px]">
+                            <div
+                                class="absolute top-3 left-3 text-xs text-white bg-[#FFFFFF66] rounded-[100px] px-2 py-1">
+                                Relationships</div>
+                            <img class="w-[290px] h-[176px]" src="/images/blog.png" alt="blog">
+                            <div class="pr-8">
+                                <h4 class="texl-lg text-secondary font-semibold">Unmasking Manipulation</h4>
+                                <p class="text-sm text-[#006D81]">How to Recognise and Respond to Toxic Messages
+                                </p>
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                            </div>
+                        </div>
+                        <div class="relative flex flex-col gap-3 w-[290px]">
+                            <div
+                                class="absolute top-3 left-3 text-xs text-white bg-[#FFFFFF66] rounded-[100px] px-2 py-1">
+                                Relationships</div>
+                            <img class="w-[290px] h-[176px]" src="/images/blog.png" alt="blog">
+                            <div class="pr-8">
+                                <h4 class="texl-lg text-secondary font-semibold">Unmasking Manipulation</h4>
+                                <p class="text-sm text-[#006D81]">How to Recognise and Respond to Toxic Messages
+                                </p>
+                            </div>
+                            <div class="flex gap-3">
+                                <div class="text-xs text-[#B5B6B6]">250 views</div>
+                                <div class="text-xs text-[#005666] font-semibold">250 likes</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8">
+                    <h3 class="texl-lg text-[#005666] font-semibold">Message History</h3>
+                    <div class="flex flex-col gap-2">
+                        <div class="flex flex-col gap-1 rounded-2xl shadow-[0px_4px_8px_0px_#9A9D9E1F] p-3">
+                            <div class="flex justify-between">
+                                <h4 class="text-base text-[#006D81]">I don't understand why you can't just trust me.
+                                    After everything I've done</h4>
+                                <i class="fa-solid fa-ellipsis-vertical text-[#88C1BA]"></i>
+                            </div>
+                            <div class="text-xs text-[#BABBC0]">19.04.2024 6PM</div>
+                        </div>
+                        <div class="flex flex-col gap-1 rounded-2xl shadow-[0px_4px_8px_0px_#9A9D9E1F] p-3">
+                            <div class="flex justify-between">
+                                <h4 class="text-base text-[#006D81]">I don't understand why you can't just trust me.
+                                    After everything I've done</h4>
+                                <i class="fa-solid fa-ellipsis-vertical text-[#88C1BA]"></i>
+                            </div>
+                            <div class="text-xs text-[#BABBC0]">19.04.2024 6PM</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- box-shadow: 4px 0px 16px 0px #006D8129; -->
+
+        <div class="shadow-[4px_0px_16px_0px_#006D8129] rounded-tl-3xl rounded-tr-3xl px-4 py-3">
+            <div class="flex justify-center gap-4  sm:gap-8">
+                <button @click="tab = 'decode'"
+                    :class="tab === 'decode' ? 'text-white bg-secondary' : 'text-primary bg-transparent'"
+                    class="inline-flex items-center gap-3 text-xs font-semibold rounded-[100px] px-4 py-3 duration-300 ease-in-out">
+                    <i class="fa-solid fa-code"></i>
+                    Decode
+                </button>
+                <button @click="tab = 'blog'"
+                    :class="tab === 'blog' ? 'text-white bg-secondary' : 'text-primary bg-transparent'"
+                    class="inline-flex items-center gap-3 text-xs font-semibold rounded-[100px] px-4 py-3 duration-300 ease-in-out">
+                    <i class="fa-solid fa-blog"></i>
+                    Blog
+                </button>
+                <button @click="tab = 'profile'"
+                    :class="tab === 'profile' ? 'text-white bg-secondary' : 'text-primary bg-transparent'"
+                    class="inline-flex items-center gap-3 text-xs font-semibold rounded-[100px] px-4 py-3 duration-300 ease-in-out">
+                    <i class="fa-solid fa-user"></i>
+                    My Profile
+                </button>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
